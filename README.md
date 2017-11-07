@@ -1,0 +1,2 @@
+# HilbertPhaseError
+改变条纹信号的调制度及频率，分析整数周期采样与非整数周期采样对Hilbert变换以及Hilbert域相位的影响
