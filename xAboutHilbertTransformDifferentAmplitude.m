@@ -14,7 +14,7 @@ stepFunctionModulateFlag=1;
 % 对称连续弧段调制幅度标记
 symmetricalArcModulateFlag=1;
 % 非对称连续弧段调制幅度标记
-asymmetricalArcModulateFlag=1;
+asymmetricalArcModulateFlag=0;
 
 % 信号范围
 numOfPeriods=8;
@@ -22,7 +22,7 @@ startOfSignal=1;
 endOfSignal=startOfSignal+period*numOfPeriods-1;
 lengthOfSignal=endOfSignal-startOfSignal+1;
 % xTick & xTickLabel
-yTick=zeros(1,numOfPeriods+1);
+xTick=zeros(1,numOfPeriods+1);
 xTickLabel=cell(1,numOfPeriods+1);
 for xt=0:numOfPeriods
     xTick(xt+1)=floor(xt*period); xTickLabel{xt+1}=num2str(xTick(xt+1));
@@ -36,8 +36,21 @@ for xt=1:8
     yTick(9+xt)=floor(xt*32);  yTickLabel{9+xt}=num2str(yTick(9+xt)); 
     yTick(9-xt)=floor(-xt*32); yTickLabel{9-xt}=num2str(yTick(9-xt));
 end
+% xTickPart & xTickLabelPart for Fourier Spectrum
+partNum=30;
+xTickFourierSpectrum=zeros(1,partNum+1);
+xTickLabelFourierSpectrum=cell(1,partNum+1);
+for xt=0:partNum/2
+    xTickFourierSpectrum(partNum/2+xt+1)=lengthOfSignal/2+1+xt+xt; xTickLabelFourierSpectrum{partNum/2+xt+1}=num2str( xt+xt);
+    xTickFourierSpectrum(partNum/2-xt+1)=lengthOfSignal/2+1-xt-xt; xTickLabelFourierSpectrum{partNum/2-xt+1}=num2str(-xt-xt);
+end
+xTickFourierSpectrum(partNum/2+1)=lengthOfSignal/2+1; xTickLabelFourierSpectrum{partNum/2+1}=num2str(0);
+
 % 相位误差显示有效区间
 upPhaseErrorBound=2; bottomPhaseErrorBound=-2;
+
+% plot画线类型
+plotLineType=''; % ''实线，':.'点虚线
 
 %% {单一幅度}******************************************************
 %% -读取24幅全部条纹图像并从中抽取出数步相移条纹图像
@@ -73,13 +86,12 @@ wrappedPhaseMoveNumHilbert=GetWrapPhaseWithHilbert(fringeListMoveNumHilbert,move
 % 显示信号及其Hilbert变换
 figure('name','Original fringe','NumberTitle','off');
 plot(fringeListMoveNum{2});hold on;
-plot(imag(hilbert(fringeListMoveNum{1})),':.','MarkerSize',8);hold on;
+plot(imag(hilbert(fringeListMoveNum{1})),plotLineType,'MarkerSize',8);hold on;
 title('Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
-grid on;
 
 
 %% {左半右全阶跃调制幅度}****************************************
@@ -104,19 +116,25 @@ wrappedPhaseMoveNumHilbertStepAmplitude=GetWrapPhaseWithHilbert(fringeListMoveNu
 % 显示阶跃函数及其Hilbert变换
 htStepAmplitudeFilter=imag(hilbert(filterStepAmplitude));
 figure('name','Step function and its Hilbert Transform','NumberTitle','off');
-plot(filterStepAmplitude,  ':.','LineWidth',0.5,'MarkerSize',4);hold on;
-plot(htStepAmplitudeFilter,':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(filterStepAmplitude,  plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
+plot(htStepAmplitudeFilter,plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 title('Step function and its Hilbert Transform');
 legend('Step function','HT','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
+% 显示阶跃函数的Fourier频谱
+figure('name','Fourier Spectrum of Step function','NumberTitle','off');
+plot(abs(fftshift(fft(filterStepAmplitude))), '','LineWidth',0.5,'MarkerSize',4);hold on;
+title('Fourier Spectrum of Step function');
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
 
 % 显示信号及其Hilbert变换
 % 第1/4步相移条纹
 figure('name','1.Half Amplitude of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepAmplitude{1},':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepAmplitude{1},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepAmplitude{1})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('1/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);ylim([-160 256]);grid on;
@@ -124,9 +142,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第2/4步相移条纹
 figure('name','2.Half Amplitude of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepAmplitude{2},':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepAmplitude{2},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepAmplitude{2})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',1,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);ylim([-160 256]);grid on;
@@ -134,9 +152,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第3/4步相移条纹
 figure('name','3.Half Amplitude of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepAmplitude{3},':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepAmplitude{3},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepAmplitude{3})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);ylim([-160 256]);grid on;
@@ -144,9 +162,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第4/4步相移条纹
 figure('name','4.Half Amplitude of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepAmplitude{4},':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepAmplitude{4},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepAmplitude{4})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);ylim([-160 256]);grid on;
@@ -157,22 +175,23 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','Phase Error (Amplitude Changed by Step Function)','NumberTitle','off');
 % 空域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                    -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 % Hilbert域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','Color','m','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'Color','m','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
 title('Phase Error (Amplitude Changed by Step Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-% 在命令行中显示空域/HIlbert域/阶跃式Hilbert域相位误差的平均值与最大值
-fprintf('Mean of Space Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                   -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of Space Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                 -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negative of Space Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                 -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Mean of HT Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepAmplitude  -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of HT Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negetive of HT Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
+% 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值与最大值
+fprintf('------------stepFunctionModulate-------------\n');
+fprintf('        Mean of Space Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('Max positive of Space Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('Max negative of Space Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('           Mean of HT Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('   Max positive of HT Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('   Max negetive of HT Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
 
 end
 
@@ -198,71 +217,48 @@ wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude=GetWrapPhaseWithHilbert(fringe
 %% -显示对称连续弧段函数、数步相移条纹信号及其Hilbert变换、相位误差图表
 % 组合显示原始信号、对称连续弧段函数、调制后的组合函数
 figure('name','Symmetrical Arc Function','NumberTitle','off');
-plot(symmetricalArc, ':.','LineWidth',0.5,'MarkerSize',4);
+plot(symmetricalArc, plotLineType,'LineWidth',0.5,'MarkerSize',4);
 title('Symmetrical Arc Function');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 组合显示原始信号、调制后的组合函数
-figure('name','1/4 Step of Original fringe & Demodulated signal by Symmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNum{1},                       ':.','LineWidth',1.5,'MarkerSize',4);hold on;
-plot(fringeListMoveNumSymmetricalArcAmplitude{1},':.','LineWidth',1.5,'MarkerSize',4);
-title('1/4 Step of Original fringe & Demodulated signal by Symmetrical Arc Function');
-legend('Fringe signal','Demodulated signal','Location','NorthEast');
+figure('name','1/4 Step of Original fringe & Modulated signal by Symmetrical Arc Function','NumberTitle','off');
+plot(fringeListMoveNum{1},                       plotLineType,'LineWidth',1.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcAmplitude{1},plotLineType,'LineWidth',1.5,'MarkerSize',4);
+title('1/4 Step of Original fringe & Modulated signal by Symmetrical Arc Function');
+legend('Fringe signal','Modulated signal','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-32,160]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
-
-% xTickPart & xTickLabelPart
-partNum=30;
-xTickPart=zeros(1,partNum+1);
-xTickLabelPart=cell(1,partNum+1);
-for xt=0:partNum/2
-    xTickPart(partNum/2+xt+1)=lengthOfSignal/2+1+xt; xTickLabelPart{partNum/2+xt+1}=num2str( xt);
-    xTickPart(partNum/2-xt+1)=lengthOfSignal/2+1-xt; xTickLabelPart{partNum/2-xt+1}=num2str(-xt);
-end
-xTickPart(partNum/2+1)=lengthOfSignal/2+1; xTickLabelPart{partNum/2+1}=num2str(0);
 
 % 分别显示原始信号、对称连续弧段函数、调制后的组合函数的Fourier变换
 % for k=1:moveNumPart 
 fftFringeListMoveNum=fftshift(fft(fringeListMoveNum{1}));
 fftFringeListMoveNumSymmetricalArcAmplitude=fftshift(fft(fringeListMoveNumSymmetricalArcAmplitude{1}));
 fftSymmetricalArcAmplitudeFilter=fftshift(fft(symmetricalArc));
-% (real part) Fourier Transform
-figure('name','(real part) Fourier Transform of Fringe signal, Symmetrical Arc Function, Demodulated signal','NumberTitle','off');
-subplot(2,1,1)
-plot(real(fftFringeListMoveNum),                        ':.','LineWidth',1,'MarkerSize',4);hold on;
-plot(real(fftFringeListMoveNumSymmetricalArcAmplitude), ':.','LineWidth',1,'MarkerSize',4);
-title('(real part) Fourier Transform of Fringe signal & Demodulated signal');
-legend('Fringe signal','Demodulated signal','Location','NorthEast');
-xlim([min(xTickPart),max(xTickPart)]);ylim([-2*10000,8*10000]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
-subplot(2,1,2);
-plot(real(fftSymmetricalArcAmplitudeFilter),            ':.','LineWidth',1,'MarkerSize',4);
-title('(real part) Fourier Transform of Symmetrical Arc Function');
-xlim([min(xTickPart),max(xTickPart)]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
-
-% (imaginary part) Fourier Transform
-figure('name','(imaginary part) Fourier Transform of Fringe signal, Symmetrical Arc Function, Demodulated signal','NumberTitle','off');
-subplot(2,1,1);
-plot(imag(fftFringeListMoveNum),                        ':.','LineWidth',1,'MarkerSize',4);hold on;
-plot(imag(fftFringeListMoveNumSymmetricalArcAmplitude), ':.','LineWidth',1,'MarkerSize',4);
-title('(imaginary part) Fourier Transform of Fringe signal & Demodulated signal');
-legend('Fringe signal','Demodulated signal','Location','SouthEast');
-xlim([min(xTickPart),max(xTickPart)]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
-subplot(2,1,2);
-plot(imag(fftSymmetricalArcAmplitudeFilter),            ':.','LineWidth',1,'MarkerSize',4);
-title('(imaginary part) Fourier Transform of Symmetrical Arc Function');
-xlim([min(xTickPart),max(xTickPart)]);ylim([-1,1]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
+figure('name','(real part) Fourier Transform of Fringe signal, Modulated signal, Symmetrical Arc Function','NumberTitle','off');
+subplot(3,1,1)
+plot(abs(fftshift(fft(fringeListMoveNum{1}))),                       plotLineType,'LineWidth',1,'MarkerSize',4);
+title('Fourier Spectrum of Fringe signal');
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);ylim([-2*10000,8*10000]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
+subplot(3,1,2)
+plot(abs(fftshift(fft(fringeListMoveNumSymmetricalArcAmplitude{1}))),plotLineType,'LineWidth',1,'MarkerSize',4);
+title('Fourier Spectrum of Modulated signal');
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);ylim([-2*10000,8*10000]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
+subplot(3,1,3)
+plot(abs(fftshift(fft(symmetricalArc))),                             plotLineType,'LineWidth',1,'MarkerSize',4);
+title('Fourier Spectrum of Symmetrical Arc Function');
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
 
 % 显示对称连续弧段函数及其Hilbert变换
 htSymmetricalArcAmplitudeFilter=imag(hilbert(symmetricalArc));
 figure('name','Symmetrical Arc Function and its Hilbert Transform','NumberTitle','off');
-plot(symmetricalArc,                 ':.','LineWidth',0.5,'MarkerSize',4);hold on;
-plot(htSymmetricalArcAmplitudeFilter,':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(symmetricalArc,                 plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
+plot(htSymmetricalArcAmplitudeFilter,plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 title('Symmetrical Arc Function and its Hilbert Transform');
 legend('Symmetrical Arc Function ','HT','Location','SouthEast');
 xlim([0,lengthOfSignal-1]);grid on;
@@ -271,9 +267,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 % 显示信号及其Hilbert变换
 % 第1/4步相移条纹
 figure('name','1.Amplitude Changed by Symmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcAmplitude{1},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcAmplitude{1},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcAmplitude{1})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('1/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -281,9 +277,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第2/4步相移条纹
 figure('name','2.Amplitude Changed by Symmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcAmplitude{2},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcAmplitude{2},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcAmplitude{2})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -291,9 +287,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第3/4步相移条纹
 figure('name','3.Amplitude Changed by Symmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcAmplitude{3},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcAmplitude{3},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcAmplitude{3})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -301,9 +297,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第4/4步相移条纹
 figure('name','4.Amplitude Changed by Symmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcAmplitude{4},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcAmplitude{4},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcAmplitude{4})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -314,22 +310,23 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','Phase Error (Amplitude Changed by Symmetrical Arc Function)','NumberTitle','off');
 % 空域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                              -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 % Hilbert域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','Color','m','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',1,'MarkerSize',4);hold on;
+    plotLineType,'Color','m','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',1,'MarkerSize',4);hold on;
 title('Phase Error (Amplitude Changed by Symmetrical Arc Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthEast');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-% 在命令行中显示空域/HIlbert域/阶跃式Hilbert域相位误差的平均值与最大值
-fprintf('Mean of Space Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                   -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of Space Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                 -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negative of Space Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                 -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Mean of HT Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude  -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of HT Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negetive of HT Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
+% 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值与最大值
+fprintf('------------symmetricalArcModulate-------------\n');
+fprintf('        Mean of Space Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('Max positive of Space Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('Max negative of Space Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('           Mean of HT Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('   Max positive of HT Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('   Max negetive of HT Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
 end
 
 %% {非对称连续弧段调制幅度}**************************************
@@ -354,71 +351,61 @@ wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude=GetWrapPhaseWithHilbert(fring
 %% -显示非对称连续弧段函数、数步相移条纹信号及其Hilbert变换、相位误差图表
 % 组合显示原始信号、对称非连续弧段函数、调制后的组合函数
 figure('name','Asymmetrical Arc Function','NumberTitle','off');
-plot(asymmetricalArc, ':.','LineWidth',0.5,'MarkerSize',4);
+plot(asymmetricalArc, plotLineType,'LineWidth',0.5,'MarkerSize',4);
 title('Asymmetrical Arc Function');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 组合显示原始信号、调制后的组合函数
-figure('name','1/4 Step of Original fringe & Demodulated signal by Asymmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNum{1},                        ':.','LineWidth',1.5,'MarkerSize',4);hold on;
-plot(fringeListMoveNumAsymmetricalArcAmplitude{1},':.','LineWidth',1.5,'MarkerSize',4);
-title('1/4 Step of Original fringe & Demodulated signal by Asymmetrical Arc Function');
-legend('Fringe signal','Demodulated signal','Location','NorthWest');
+figure('name','1/4 Step of Original fringe & Modulated signal by Asymmetrical Arc Function','NumberTitle','off');
+plot(fringeListMoveNum{1},                        plotLineType,'LineWidth',1.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcAmplitude{1},plotLineType,'LineWidth',1.5,'MarkerSize',4);
+title('1/4 Step of Original fringe & Modulated signal by Asymmetrical Arc Function');
+legend('Fringe signal','Modulated signal','Location','NorthWest');
 xlim([0,lengthOfSignal-1]);ylim([-32,160]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
-
-% xTickPart & xTickLabelPart
-partNum=30;
-xTickPart=zeros(1,partNum+1);
-xTickLabelPart=cell(1,partNum+1);
-for xt=0:partNum/2
-    xTickPart(partNum/2+xt+1)=lengthOfSignal/2+1+xt; xTickLabelPart{partNum/2+xt+1}=num2str( xt);
-    xTickPart(partNum/2-xt+1)=lengthOfSignal/2+1-xt; xTickLabelPart{partNum/2-xt+1}=num2str(-xt);
-end
-xTickPart(partNum/2+1)=lengthOfSignal/2+1; xTickLabelPart{partNum/2+1}=num2str(0);
-
+ 
 % 分别显示原始信号、非对称连续弧段函数、调制后的组合函数的Fourier变换
 % for k=1:moveNumPart 
 fftFringeListMoveNum=fftshift(fft(fringeListMoveNum{1}));
 fftFringeListMoveNumAsymmetricalArcAmplitude=fftshift(fft(fringeListMoveNumAsymmetricalArcAmplitude{1}));
 fftAsymmetricalArcAmplitudeFilter=fftshift(fft(asymmetricalArc));
 % (real part) Fourier Transform
-figure('name','(real part) Fourier Transform of Fringe signal, Asymmetrical Arc Function, Demodulated signal','NumberTitle','off');
+figure('name','(real part) Fourier Transform of Fringe signal, Asymmetrical Arc Function, Modulated signal','NumberTitle','off');
 subplot(2,1,1)
-plot(real(fftFringeListMoveNum),                         ':.','LineWidth',1,'MarkerSize',4);hold on;
-plot(real(fftFringeListMoveNumAsymmetricalArcAmplitude), ':.','LineWidth',1,'MarkerSize',4);
-title('(real part) Fourier Transform of Fringe signal & Demodulated signal');
-legend('Fringe signal','Demodulated signal','Location','NorthEast');
-xlim([min(xTickPart),max(xTickPart)]);ylim([-2*10000,8*10000]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
+plot(real(fftFringeListMoveNum),                         plotLineType,'LineWidth',1,'MarkerSize',4);hold on;
+plot(real(fftFringeListMoveNumAsymmetricalArcAmplitude), plotLineType,'LineWidth',1,'MarkerSize',4);
+title('(real part) Fourier Transform of Fringe signal & Modulated signal');
+legend('Fringe signal','Modulated signal','Location','NorthEast');
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);ylim([-2*10000,8*10000]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
 subplot(2,1,2);
-plot(real(fftAsymmetricalArcAmplitudeFilter),            ':.','LineWidth',1,'MarkerSize',4);
+plot(real(fftAsymmetricalArcAmplitudeFilter),            plotLineType,'LineWidth',1,'MarkerSize',4);
 title('(real part) Fourier Transform of Asymmetrical Arc Function');
-xlim([min(xTickPart),max(xTickPart)]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
 
 % (imaginary part) Fourier Transform
-figure('name','(imaginary part) Fourier Transform of Fringe signal, Asymmetrical Arc Function, Demodulated signal','NumberTitle','off');
+figure('name','(imaginary part) Fourier Transform of Fringe signal, Asymmetrical Arc Function, Modulated signal','NumberTitle','off');
 subplot(2,1,1);
-plot(imag(fftFringeListMoveNum),                         ':.','LineWidth',1,'MarkerSize',4);hold on;
-plot(imag(fftFringeListMoveNumAsymmetricalArcAmplitude), ':.','LineWidth',1,'MarkerSize',4);
-title('(imaginary part) Fourier Transform of Fringe signal & Demodulated signal');
-legend('Fringe signal','Demodulated signal','Location','SouthEast');
-xlim([min(xTickPart),max(xTickPart)]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
+plot(imag(fftFringeListMoveNum),                         plotLineType,'LineWidth',1,'MarkerSize',4);hold on;
+plot(imag(fftFringeListMoveNumAsymmetricalArcAmplitude), plotLineType,'LineWidth',1,'MarkerSize',4);
+title('(imaginary part) Fourier Transform of Fringe signal & Modulated signal');
+legend('Fringe signal','Modulated signal','Location','SouthEast');
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
 subplot(2,1,2);
-plot(imag(fftAsymmetricalArcAmplitudeFilter),            ':.','LineWidth',1,'MarkerSize',4);
+plot(imag(fftAsymmetricalArcAmplitudeFilter),            plotLineType,'LineWidth',1,'MarkerSize',4);
 title('(imaginary part) Fourier Transform of Asymmetrical Arc Function');
-xlim([min(xTickPart),max(xTickPart)]);ylim([-1,1]);grid on;
-set(gca, 'XTick', xTickPart);set(gca, 'XTickLabel',xTickLabelPart);
+xlim([min(xTickFourierSpectrum),max(xTickFourierSpectrum)]);ylim([-1,1]);grid on;
+set(gca, 'XTick', xTickFourierSpectrum);set(gca, 'XTickLabel',xTickLabelFourierSpectrum);
 
 % 显示非对称连续弧段函数及其Hilbert变换
 htAsymmetricalArcAmplitudeFilter=imag(hilbert(asymmetricalArc));
 figure('name','Asymmetrical Arc Function and its Hilbert Transform','NumberTitle','off');
-plot(asymmetricalArc,                 ':.','LineWidth',0.5,'MarkerSize',4);hold on;
-plot(htAsymmetricalArcAmplitudeFilter,':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(asymmetricalArc,                 plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
+plot(htAsymmetricalArcAmplitudeFilter,plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 title('Asymmetrical Arc Function and its Hilbert Transform');
 legend('Asymmetrical Arc Function ','HT','Location','SouthEast');
 xlim([0,lengthOfSignal-1]);grid on;
@@ -427,9 +414,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 % 显示信号及其Hilbert变换
 % 第1/4步相移条纹
 figure('name','1.Amplitude Changed by Asymmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcAmplitude{1},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcAmplitude{1},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcAmplitude{1})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('1/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthWest');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -437,9 +424,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第2/4步相移条纹
 figure('name','2.Amplitude Changed by Asymmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcAmplitude{2},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcAmplitude{2},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcAmplitude{2})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthWest');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -447,9 +434,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第3/4步相移条纹
 figure('name','3.Amplitude Changed by Asymmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcAmplitude{3},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcAmplitude{3},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcAmplitude{3})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthWest');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -457,9 +444,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第4/4步相移条纹
 figure('name','4.Amplitude Changed by Asymmetrical Arc Function','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcAmplitude{4},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcAmplitude{4},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcAmplitude{4})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthWest');
 xlim([0,lengthOfSignal-1]);ylim([-96,160]);grid on;
@@ -470,15 +457,15 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','Phase Error (Amplitude Changed by Asymmetrical Arc Function)','NumberTitle','off');
 % 空域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                               -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 % 如果对称连续弧段调制幅度标记为1，亦显示其Hilbert域相位误差
 if symmetricalArcModulateFlag==1
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcAmplitude -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',1,'MarkerSize',4);hold on;   
+    plotLineType,'Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',1,'MarkerSize',4);hold on;   
 end
 % Hilbert域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','Color','m','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',1,'MarkerSize',4);hold on;
+    plotLineType,'Color','m','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',1,'MarkerSize',4);hold on;
 title('Phase Error (Amplitude Changed by Asymmetrical Arc Function)');
 % 如果对称连续弧段调制幅度标记为1，亦显示其Hilbert域相位误差
 if symmetricalArcModulateFlag==1
@@ -489,13 +476,14 @@ end
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-% 在命令行中显示空域/HIlbert域/阶跃式Hilbert域相位误差的平均值与最大值
-fprintf('Mean of Space Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                   -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of Space Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                 -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negative of Space Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum                 -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Mean of HT Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude  -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of HT Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negetive of HT Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)))));
+% 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值与最大值
+fprintf('------------asymmetricalArcModulate-------------\n');
+fprintf('        Mean of Space Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('Max positive of Space Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('Max negative of Space Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNum-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('           Mean of HT Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('   Max positive of HT Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('   Max negetive of HT Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound))));
 end
 
 

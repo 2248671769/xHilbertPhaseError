@@ -38,6 +38,9 @@ end
 % 相位误差显示有效区间
 upPhaseErrorBound=2; bottomPhaseErrorBound=-2;
 
+% plot画线类型
+plotLineType=''; % ''实线，':'点虚线
+
 %% {阶跃式调制频率}******************************************************
 % 阶跃调制频率标记
 if stepFrequencyModulateFlag==1
@@ -73,9 +76,9 @@ wrappedPhaseMoveNumHilbertStepFrequency=GetWrapPhaseWithHilbert(fringeListMoveNu
 % 显示信号及其Hilbert变换
 % 第1/4步相移条纹
 figure('name','1.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepFrequency{1},                       ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepFrequency{1},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{1})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('1/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -83,9 +86,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第2/4步相移条纹
 figure('name','2.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepFrequency{2},                       ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepFrequency{2},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{2})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -93,9 +96,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第3/4步相移条纹
 figure('name','3.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepFrequency{3},                       ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepFrequency{3},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{3})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -103,9 +106,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第4/4步相移条纹
 figure('name','4.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumStepFrequency{4},                       ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumStepFrequency{4},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{4})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -116,22 +119,23 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','Phase Error (Frequency Changed by Step Function)','NumberTitle','off');
 % 空域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumStepFrequency       -wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 % Hilbert域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
 title('Phase Error (Frequency Changed by Step Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-% 在命令行中显示空域/HIlbert域/阶跃式Hilbert域相位误差的平均值与最大值
-fprintf('Mean of Space Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumStepFrequency            -wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of Space Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumStepFrequency    -wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negative of Space Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumStepFrequency    -wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Mean of HT Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepFrequency        -wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of HT Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negetive of HT Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
+% 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值与最大值
+fprintf('------------stepFrequencyModulate-------------\n');
+fprintf('        Mean of Space Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('Max positive of Space Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('Max negative of Space Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('           Mean of HT Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('   Max positive of HT Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('   Max negetive of HT Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
 
 end
 
@@ -172,7 +176,7 @@ wrappedPhaseMoveNumHilbertSymmetricalArcFrequency=GetWrapPhaseWithHilbert(fringe
 n=1:width;
 symmetricalArcFrequencyFunction=n+100*sin(2*pi*n/width);
 figure('name','Symmetrical Arc Function','NumberTitle','off');
-plot(symmetricalArcFrequencyFunction,':.','LineWidth',1,'MarkerSize',4);hold on;
+plot(symmetricalArcFrequencyFunction,plotLineType,'LineWidth',1,'MarkerSize',4);hold on;
 plot(n,'g-.','LineWidth',0.5);hold on;
 title('Symmetrical Arc Function');
 xlim([0,lengthOfSignal-1]);ylim([0,width-1]);grid on;
@@ -182,9 +186,9 @@ set(gca, 'YTick', xTick);set(gca, 'YTickLabel',xTickLabel);
 % 显示信号及其Hilbert变换
 % 第1/4步相移条纹
 figure('name','1.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcFrequency{1},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcFrequency{1},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{1})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('1/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -192,9 +196,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第2/4步相移条纹
 figure('name','2.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcFrequency{2},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcFrequency{2},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{2})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -202,9 +206,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第3/4步相移条纹
 figure('name','3.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcFrequency{3},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcFrequency{3},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{3})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -212,9 +216,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第4/4步相移条纹
 figure('name','4.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumSymmetricalArcFrequency{4},             ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumSymmetricalArcFrequency{4},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{4})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -225,22 +229,23 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','Phase Error (Frequency Changed by Step Function)','NumberTitle','off');
 % 空域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumSymmetricalArcFrequency       -wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 % Hilbert域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
 title('Phase Error (Frequency Changed by Step Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-% 在命令行中显示空域/HIlbert域/对称连续式Hilbert域相位误差的平均值与最大值
-fprintf('Mean of Space Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumSymmetricalArcFrequency            -wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of Space Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumSymmetricalArcFrequency    -wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negative of Space Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumSymmetricalArcFrequency    -wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Mean of HT Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcFrequency        -wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of HT Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negetive of HT Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
+% 在命令行中显示空域/Hilbert域/对称连续式Hilbert域相位误差的平均值与最大值
+fprintf('------------symmetricalArcFrequencyModulate-------------\n');
+fprintf('        Mean of Space Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('Max positive of Space Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('Max negative of Space Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('           Mean of HT Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('   Max positive of HT Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('   Max negetive of HT Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
 
 end
 
@@ -281,7 +286,7 @@ wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency=GetWrapPhaseWithHilbert(fring
 n=1:width;
 symmetricalArcFrequencyFunction=n+100*sin(2*pi*n/(1.3*width));
 figure('name','Symmetrical Arc Function','NumberTitle','off');
-plot(symmetricalArcFrequencyFunction,':.','LineWidth',1,'MarkerSize',4);hold on;
+plot(symmetricalArcFrequencyFunction,plotLineType,'LineWidth',1,'MarkerSize',4);hold on;
 plot(n,'g-.','LineWidth',0.5);hold on;
 title('Asymmetrical Arc Function');
 xlim([0,lengthOfSignal-1]);ylim([0,width-1]);grid on;
@@ -291,9 +296,9 @@ set(gca, 'YTick', xTick);set(gca, 'YTickLabel',xTickLabel);
 % 显示信号及其Hilbert变换
 % 第1/4步相移条纹
 figure('name','1.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcFrequency{1},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcFrequency{1},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcFrequency{1})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('1/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -301,9 +306,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第2/4步相移条纹
 figure('name','2.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcFrequency{2},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcFrequency{2},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcFrequency{2})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -311,9 +316,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第3/4步相移条纹
 figure('name','3.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcFrequency{3},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcFrequency{3},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcFrequency{3})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -321,9 +326,9 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % 第4/4步相移条纹
 figure('name','4.Half Frequency of Original fringe','NumberTitle','off');
-plot(fringeListMoveNumAsymmetricalArcFrequency{4},            ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+plot(fringeListMoveNumAsymmetricalArcFrequency{4},            plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumAsymmetricalArcFrequency{4})),...
-    ':.','Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -334,22 +339,23 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','Phase Error (Frequency Changed by Step Function)','NumberTitle','off');
 % 空域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumAsymmetricalArcFrequency       -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 % Hilbert域相位误差
 plot(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    ':.','Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
+    plotLineType,'Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',4);hold on;
 title('Phase Error (Frequency Changed by Step Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-% 在命令行中显示空域/HIlbert域/非对称连续式Hilbert域相位误差的平均值与最大值
-fprintf('Mean of Space Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumAsymmetricalArcFrequency            -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of Space Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumAsymmetricalArcFrequency    -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negative of Space Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumAsymmetricalArcFrequency    -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Mean of HT Phase Error: %s\n',num2str(mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency        -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
-fprintf('Max positive of HT Phase Error: %s\n',num2str(max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
-fprintf('Max negetive of HT Phase Error: %s\n',num2str(min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)))));
+% 在命令行中显示空域/Hilbert域/非对称连续式Hilbert域相位误差的平均值与最大值
+fprintf('------------asymmetricalArcFrequencyModulate-------------\n');
+fprintf('        Mean of Space Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('Max positive of Space Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('Max negative of Space Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('           Mean of HT Phase Error: %f\n',mean(extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound)));
+fprintf('   Max positive of HT Phase Error: %f\n',max((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
+fprintf('   Max negetive of HT Phase Error: %f\n',min((extractValidPhaseErrorWithBounds(wrappedPhaseMoveNumHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound))));
 
 end
 
