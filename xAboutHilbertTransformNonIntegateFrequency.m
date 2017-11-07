@@ -76,7 +76,7 @@ wrappedPhaseMoveNumHilbertStepFrequency=GetWrapPhaseWithHilbert(fringeListMoveNu
 figure('name','1.Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumStepFrequency{1},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{1})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('Integate Periods of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -86,7 +86,7 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','2.Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumStepFrequency{2},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{2})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -96,7 +96,7 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','3.Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumStepFrequency{3},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{3})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -106,7 +106,7 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','4.Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumStepFrequency{4},                       plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumStepFrequency{4})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -176,7 +176,7 @@ wrappedPhaseMoveNumHilbertSymmetricalArcFrequency=GetWrapPhaseWithHilbert(fringe
 figure('name','1.Non-Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumSymmetricalArcFrequency{1},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{1})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('1/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -186,7 +186,7 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','2.Non-Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumSymmetricalArcFrequency{2},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{2})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('2/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -196,7 +196,7 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','3.Non-Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumSymmetricalArcFrequency{3},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{3})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('3/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
@@ -206,7 +206,7 @@ set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 figure('name','4.Non-Integate Periods of Original fringe','NumberTitle','off');
 plot(fringeListMoveNumSymmetricalArcFrequency{4},             plotLineType,'LineWidth',0.5,'MarkerSize',4);hold on;
 plot(imag(hilbert(fringeListMoveNumSymmetricalArcFrequency{4})),...
-    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);hold on;
+    plotLineType,'Color',[0,0.8078,0.8196],'MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',6);
 title('4/4 Step of Original fringe and its Hilbert Transform');
 legend('Original fringe','HT','Location','NorthEast');
 xlim([0,lengthOfSignal-1]);ylim([-96 192]);grid on;
