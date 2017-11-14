@@ -64,6 +64,7 @@ for k=1:moveNumAll
     sf=-period*(k-1)/moveNumAll;
     fringeListAllIntegatePeriods{k} = floor(255*0.5*(cos(((0:lengthOfSignal-1)-sf)/period*2*pi)+1)/2);
 end
+
 % 抽取出数步相移条纹图像
 moveNumPart=4;
 fringeListFractionalIntegatePeriods=SelectNStepFring(fringeListAllIntegatePeriods,moveNumPart);
@@ -142,15 +143,15 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 % 在命令行中显示空域/Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------integatePeriods-------------\n');
 wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalIntegatePeriods-wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('          Mean of Space Phase Error: %f\n',mean(wrappedErrorSpace));
-fprintf('  Max positive of Space Phase Error: %f\n',max(wrappedErrorSpace));
-fprintf('  Max negative of Space Phase Error: %f\n',min(wrappedErrorSpace));
-fprintf('          RMSE of Space Phase Error: %f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
+fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
+fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
+fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
+fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
 wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertIntegatePeriods-wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('        Mean of Hilbert Phase Error: %f\n',mean(wrappedErrorHT));
-fprintf('Max positive of Hilbert Phase Error: %f\n',max(wrappedErrorHT));
-fprintf('Max negetive of Hilbert Phase Error: %f\n',min(wrappedErrorHT));
-fprintf('        RMSE of Hilbert Phase Error: %f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
+fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
+fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
 
 end
 
@@ -254,16 +255,16 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------nonIntegatePeriods-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalNonIntegatePeriods-wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('          Mean of Space Phase Error: %f\n',mean(wrappedErrorSpace));
-fprintf(  'Max positive of Space Phase Error: %f\n',max(wrappedErrorSpace));
-fprintf('  Max negative of Space Phase Error: %f\n',min(wrappedErrorSpace));
-fprintf('          RMSE of Space Phase Error: %f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalNonIntegatePeriods    -wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
+fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
+fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
+fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
+fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
 wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertNonIntegatePeriods-wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('        Mean of Hilbert Phase Error: %f\n',mean(wrappedErrorHT));
-fprintf('Max positive of Hilbert Phase Error: %f\n',max(wrappedErrorHT));
-fprintf('Max negetive of Hilbert Phase Error: %f\n',min(wrappedErrorHT));
-fprintf('        RMSE of Hilbert Phase Error: %f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
+fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
+fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
 
 end
 
