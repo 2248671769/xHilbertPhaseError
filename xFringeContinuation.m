@@ -128,7 +128,7 @@ end
 
 %% *****************************************************************
 if amplitudeModulatedFlag==1
-%% [Hilbert]-[延拓]-(阶跃式与非对称连续弧段并行幅度调制信号)*
+%% [Hilbert]-(阶跃式与非对称连续弧段并行幅度调制信号)*
 %% -计算数步相移(阶跃式与非对称连续弧段并行幅度调制)的空域相位
 wrappedPhaseFractionalAmplitudeModulated=GetWrapPhase(fringeListFractionalAmplitudeModulated,moveNumPart);
 ABFractionalAmplitudeModulated=GetABNormal(fringeListFractionalAmplitudeModulated,wrappedPhaseFractionalAmplitudeModulated);
@@ -151,7 +151,7 @@ wrappedPhaseFractionalHilbertAmplitudeModulated=GetWrapPhaseWithHilbert(fringeLi
 %     set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % end
 
-%% -归一化处理(fringe-A)/B及归一化后的空域相位
+%% -归一化处理(fringe-A)/B及归一化后的理想空域相位
 fringeListAllNormalizationAmplitudeModulated=NormalizeFringe(fringeListAllAmplitudeModulated,moveNumAll,ABAllAmplitudeModulated);
 wrappedPhaseAllNormalizationAmplitudeModulated=GetWrapPhase(fringeListAllNormalizationAmplitudeModulated,moveNumAll);
 
@@ -415,7 +415,13 @@ fprintf('           RMSE of Mean Phase Error: %+f\n',sqrt(sum((phaseErrorMean   
 
 end
 
+%% *****************************************************************
+%% {Hilbert}-{延拓}-(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)*
+
+
 return
+
+% ----------------------------------------------------------------------------------------
 
 %% {Hilbert}-{延拓}-(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)*
 

@@ -76,7 +76,6 @@ end
 
 %% -计算理想空域相位
 wrappedPhaseAllIntegatePeriods=GetWrapPhase(fringeListAllIntegatePeriods,moveNumAll);
-AB=GetABNormal(fringeListAllIntegatePeriods,wrappedPhaseAllIntegatePeriods);
 
 %% -计算数步相移条纹的空域相位
 wrappedPhaseFractionalIntegatePeriods=GetWrapPhase(fringeListFractionalIntegatePeriods,moveNumPart);
@@ -130,11 +129,11 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Integate Periods)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalIntegatePeriods       -wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalIntegatePeriods-wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorSpace,plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertIntegatePeriods-wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',2);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertIntegatePeriods-wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorHT,   plotLineType,'Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Frequency Changed by Step Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
@@ -142,12 +141,10 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------integatePeriods-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalIntegatePeriods-wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
 fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
 fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
 fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertIntegatePeriods-wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
 fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
 fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
@@ -177,7 +174,6 @@ end
 
 %% -计算理想空域相位
 wrappedPhaseAllNonIntegatePeriods=GetWrapPhase(fringeListAllNonIntegatePeriods,moveNumAll);
-AB=GetABNormal(fringeListAllNonIntegatePeriods,wrappedPhaseAllNonIntegatePeriods);
 
 %% -计算数步相移条纹的空域相位
 wrappedPhaseFractionalNonIntegatePeriods=GetWrapPhase(fringeListFractionalNonIntegatePeriods,moveNumPart);
@@ -240,14 +236,11 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Non-Integate Periods)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalNonIntegatePeriods       -wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
-% % 整数周期的Hilbert域相位误差
-% plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertIntegatePeriods   -wrappedPhaseAllIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound),...
-%     plotLineType,'Color','g','MarkerEdgeColor',[0.87,0.49,0],'LineWidth',0.5,'MarkerSize',2);hold on;
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalNonIntegatePeriods    -wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorSpace,plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % 非整数周期的Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertNonIntegatePeriods-wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertNonIntegatePeriods-wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorHT,   plotLineType,'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Non-Integate Periods)');
 legend('Space Phase Error','HT Phase Error','Location','SouthEast');
 xlim([0,lengthOfSignal-1]);grid on;
@@ -255,12 +248,10 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------nonIntegatePeriods-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalNonIntegatePeriods    -wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
 fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
 fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
 fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertNonIntegatePeriods-wrappedPhaseAllNonIntegatePeriods,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
 fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
 fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));

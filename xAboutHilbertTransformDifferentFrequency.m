@@ -64,11 +64,11 @@ for k=1:moveNumAll
     sf=-period*(k-1)/moveNumAll;
     for i=1:lengthOfSignal
         if i<lengthOfSignal/2
-            fringeListAllStepFrequency{k}(:,i)=floor(255.0/2*(cos((i-sf)/period*2*pi))/2);
+            fringeListAllStepFrequency{k}(:,i)=floor(255.0/2*(cos((i-1-sf)/period*2*pi)+1)/2);
         else
             T1=period;T2=period*2;
             zz=(T1-T2)*(lengthOfSignal/2-1-sf)/T1;
-            fringeListAllStepFrequency{k}(:,i)=floor(255.0/2*(cos((i-sf-zz)/T2 *2*pi))/2);
+            fringeListAllStepFrequency{k}(:,i)=floor(255.0/2*(cos((i-1-sf-zz)/T2 *2*pi)+1)/2);
         end
     end
 end
@@ -82,18 +82,17 @@ for k=1:moveNumPart
     sf=-period*(k-1)/moveNumPart;
     for i=1:lengthOfSignal
         if i<lengthOfSignal/2
-            expectedHilbertOfFringeListFractionalStepFrequency{k}(:,i)=255.0/2*(sin((i-sf)/period*2*pi))/2;
+            expectedHilbertOfFringeListFractionalStepFrequency{k}(:,i)=255.0/2*(sin((i-1-sf)/period*2*pi))/2;
         else
             T1=period;T2=period*2;
             zz=(T1-T2)*(lengthOfSignal/2-1-sf)/T1;
-            expectedHilbertOfFringeListFractionalStepFrequency{k}(:,i)=255.0/2*(sin((i-sf-zz)/T2*2*pi))/2;
+            expectedHilbertOfFringeListFractionalStepFrequency{k}(:,i)=255.0/2*(sin((i-1-sf-zz)/T2*2*pi))/2;
         end
     end
 end
 
 %% -计算理想空域相位
 wrappedPhaseAllStepFrequency=GetWrapPhase(fringeListAllStepFrequency,moveNumAll);
-AB=GetABNormal(fringeListAllStepFrequency,wrappedPhaseAllStepFrequency);
 
 %% -计算数步相移条纹的空域相位
 wrappedPhaseFractionalStepFrequency=GetWrapPhase(fringeListFractionalStepFrequency,moveNumPart);
@@ -117,7 +116,7 @@ for k=1:moveNumPart
     if k==moveNumPart
         legend('Original Fringe','Expected HT','Actual HT','Location','SouthOutside','Orientation','Horizontal');
     end
-    xlim([0,lengthOfSignal-1]);ylim([-160 256]);grid on;
+    xlim([0,lengthOfSignal-1]);ylim([-64-8 128+8]);grid on;
     set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
     set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 end
@@ -135,11 +134,11 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Frequency Modulated by Step Function)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalStepFrequency       -wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalStepFrequency    -wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorSpace,plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorHT,   plotLineType,'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Frequency Modulated by Step Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
@@ -147,16 +146,14 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------stepFrequencyModulate-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('          Mean of Space Phase Error: %f\n',mean(wrappedErrorSpace));
-fprintf('  Max positive of Space Phase Error: %f\n',max(wrappedErrorSpace));
-fprintf('  Max negative of Space Phase Error: %f\n',min(wrappedErrorSpace));
-fprintf('          RMSE of Space Phase Error: %f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertStepFrequency-wrappedPhaseAllStepFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('        Mean of Hilbert Phase Error: %f\n',mean(wrappedErrorHT));
-fprintf('Max positive of Hilbert Phase Error: %f\n',max(wrappedErrorHT));
-fprintf('Max negetive of Hilbert Phase Error: %f\n',min(wrappedErrorHT));
-fprintf('        RMSE of Hilbert Phase Error: %f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
+fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
+fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
+fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
+fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
+fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
+fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
 end
 
 
@@ -169,7 +166,7 @@ fringeListAllSymmetricalArcFrequency=cell(24,1);
 % 提取指定行列的信号，并直接设置为半幅度
 for k=1:moveNumAll
     sf=-period*(k-1)/moveNumAll;
-    fringeListAllSymmetricalArcFrequency{k}=floor(255.0/2*(cos(2*pi*((0:lengthOfSignal-1)-sf+100*sin(2*pi*(0:lengthOfSignal-1)/lengthOfSignal))/period))/2);
+    fringeListAllSymmetricalArcFrequency{k}=floor(255.0/2*(cos(2*pi*((0:lengthOfSignal-1)-sf+100*sin(2*pi*(0:lengthOfSignal-1)/lengthOfSignal))/period)+1)/2);
 end
 
 % 抽取出数步相移条纹图像
@@ -184,7 +181,6 @@ end
 
 %% -计算理想空域相位
 wrappedPhaseAllSymmetricalArcFrequency=GetWrapPhase(fringeListAllSymmetricalArcFrequency,moveNumAll);
-AB=GetABNormal(fringeListAllSymmetricalArcFrequency,wrappedPhaseAllSymmetricalArcFrequency);
 
 %% -计算数步相移条纹的空域相位
 wrappedPhaseFractionalSymmetricalArcFrequency=GetWrapPhase(fringeListFractionalSymmetricalArcFrequency,moveNumPart);
@@ -195,13 +191,12 @@ wrappedPhaseFractionalHilbertSymmetricalArcFrequency=GetWrapPhaseWithHilbert(fri
 
 %% -显示对称连续函数、数步相移条纹信号及其Hilbert变换、相位误差图表
 % 显示对称连续
-n=1:width;
-symmetricalArcFrequencyFunction=n+100*sin(2*pi*n/width);
+symmetricalArcFrequencyFunction=(0:lengthOfSignal-1)+100*sin(2*pi*(0:lengthOfSignal-1)/width);
 figure('name','Symmetrical Arc Function','NumberTitle','off');
 plot(symmetricalArcFrequencyFunction,plotLineType,'LineWidth',1,'MarkerSize',2);hold on;
-plot(n,'g-.','LineWidth',0.5);
+plot((0:lengthOfSignal-1),'g-.','LineWidth',0.5);
 title('Symmetrical Arc Function');
-xlim([0,lengthOfSignal-1]);ylim([0,width-1]);grid on;
+xlim([0,lengthOfSignal-1]);ylim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', xTick);set(gca, 'YTickLabel',xTickLabel);
 
@@ -219,7 +214,7 @@ for k=1:moveNumPart
     if k==moveNumPart
         legend('Original Fringe','Expected HT','Actual HT','Location','SouthOutside','Orientation','Horizontal');
     end
-    xlim([0,lengthOfSignal-1]);ylim([-160 256]);grid on;
+    xlim([0,lengthOfSignal-1]);ylim([-64-8 128+8]);grid on;
     set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
     set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 end
@@ -240,11 +235,11 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Frequency Modulated by Symmetrical Arc Function)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalSymmetricalArcFrequency       -wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalSymmetricalArcFrequency    -wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorSpace,plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorHT,   plotLineType,'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Frequency Modulated by Symmetrical Arc Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
@@ -252,16 +247,14 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域/对称连续式Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------symmetricalArcFrequencyModulate-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('          Mean of Space Phase Error: %f\n',mean(wrappedErrorSpace));
-fprintf('  Max positive of Space Phase Error: %f\n',max(wrappedErrorSpace));
-fprintf('  Max negative of Space Phase Error: %f\n',min(wrappedErrorSpace));
-fprintf('          RMSE of Space Phase Error: %f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertSymmetricalArcFrequency-wrappedPhaseAllSymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('        Mean of Hilbert Phase Error: %f\n',mean(wrappedErrorHT));
-fprintf('Max positive of Hilbert Phase Error: %f\n',max(wrappedErrorHT));
-fprintf('Max negetive of Hilbert Phase Error: %f\n',min(wrappedErrorHT));
-fprintf('        RMSE of Hilbert Phase Error: %f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
+fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
+fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
+fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
+fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
+fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
+fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
 
 end
 
@@ -275,7 +268,7 @@ fringeListAllAsymmetricalArcFrequency=cell(24,1);
 % 提取指定行列的信号，并直接设置为半幅度
 for k=1:moveNumAll
     sf=-period*(k-1)/moveNumAll;
-    fringeListAllAsymmetricalArcFrequency{k}=floor(255.0/2*(cos(2*pi*((0:lengthOfSignal-1)-sf+100*sin(2*pi*(0:lengthOfSignal-1)/(1.25*lengthOfSignal)))/period))/2);
+    fringeListAllAsymmetricalArcFrequency{k}=floor(255.0/2*(cos(2*pi*((0:lengthOfSignal-1)-sf+100*sin(2*pi*(0:lengthOfSignal-1)/(1.25*lengthOfSignal)))/period)+1)/2);
 end
 
 % 抽取出数步相移条纹图像
@@ -290,7 +283,6 @@ end
 
 %% -计算理想空域相位
 wrappedPhaseAllAsymmetricalArcFrequency=GetWrapPhase(fringeListAllAsymmetricalArcFrequency,moveNumAll);
-AB=GetABNormal(fringeListAllAsymmetricalArcFrequency,wrappedPhaseAllAsymmetricalArcFrequency);
 
 %% -计算数步相移条纹的空域相位
 wrappedPhaseFractionalAsymmetricalArcFrequency=GetWrapPhase(fringeListFractionalAsymmetricalArcFrequency,moveNumPart);
@@ -301,13 +293,12 @@ wrappedPhaseFractionalHilbertAsymmetricalArcFrequency=GetWrapPhaseWithHilbert(fr
 
 %% -显示非对称连续函数、数步相移条纹信号及其Hilbert变换、相位误差图表
 % 显示非对称连续
-n=1:width;
-symmetricalArcFrequencyFunction=n+100*sin(2*pi*n/(1.25*width));
+symmetricalArcFrequencyFunction=(0:lengthOfSignal-1)+100*sin(2*pi*(0:lengthOfSignal-1)/(1.25*width));
 figure('name','Asymmetrical Arc Function','NumberTitle','off');
 plot(symmetricalArcFrequencyFunction,plotLineType,'LineWidth',1,'MarkerSize',2);hold on;
-plot(n,'g-.','LineWidth',0.5);
+plot((0:lengthOfSignal-1),'g-.','LineWidth',0.5);
 title('Asymmetrical Arc Function');
-xlim([0,lengthOfSignal-1]);ylim([0,width-1]);grid on;
+xlim([0,lengthOfSignal-1]);ylim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 set(gca, 'YTick', xTick);set(gca, 'YTickLabel',xTickLabel);
 
@@ -325,7 +316,7 @@ for k=1:moveNumPart
     if k==moveNumPart
         legend('Original Fringe','Expected HT','Actual HT','Location','SouthOutside','Orientation','Horizontal');
     end
-    xlim([0,lengthOfSignal-1]);ylim([-160 256]);grid on;
+    xlim([0,lengthOfSignal-1]);ylim([-128-8 128+8]);grid on;
     set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
     set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 end
@@ -343,11 +334,11 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Frequency Modulated by Asymmetrical Arc Function)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalAsymmetricalArcFrequency       -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalAsymmetricalArcFrequency    -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorSpace,plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound),...
-    plotLineType,'LineWidth',0.5,'MarkerSize',2);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
+plot(wrappedErrorHT,   plotLineType,'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Frequency Modulated by Asymmetrical Arc Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
 xlim([0,lengthOfSignal-1]);grid on;
@@ -355,16 +346,14 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域/非对称连续式Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------asymmetricalArcFrequencyModulate-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalAsymmetricalArcFrequency    -wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('          Mean of Space Phase Error: %f\n',mean(wrappedErrorSpace));
-fprintf('  Max positive of Space Phase Error: %f\n',max(wrappedErrorSpace));
-fprintf('  Max negative of Space Phase Error: %f\n',min(wrappedErrorSpace));
-fprintf('          RMSE of Space Phase Error: %f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertAsymmetricalArcFrequency-wrappedPhaseAllAsymmetricalArcFrequency,upPhaseErrorBound,bottomPhaseErrorBound);
-fprintf('        Mean of Hilbert Phase Error: %f\n',mean(wrappedErrorHT));
-fprintf('Max positive of Hilbert Phase Error: %f\n',max(wrappedErrorHT));
-fprintf('Max negetive of Hilbert Phase Error: %f\n',min(wrappedErrorHT));
-fprintf('        RMSE of Hilbert Phase Error: %f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
+fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
+fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
+fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
+fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
+fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
+fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
 
 end
 

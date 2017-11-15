@@ -1,4 +1,4 @@
-% xGammaPhaseError.m.m
+% xGammaPhaseError.m
 % 徐文宇，20171114，周四
 % 模拟gamma效应，改变条纹信号的调制度，分析条纹调制度归一化样对Hilbert变换以及Hilbert域相位的影响
 % ver：---
@@ -55,14 +55,30 @@ upPhaseErrorBound=2; bottomPhaseErrorBound=-2;
 plotLineType='';        % '' 实线
 plotDottedLineType=':'; % ':'虚线
 
+%% Gamma曲线
+gamma=0.8;
+filterGamma=pow2((0:lengthOfSignal-1),gamma);
+figure
+
+
 %% {生成24幅全部条纹图像(单一幅度)}*******************************
 %% -生成24幅全部条纹图像并从中抽取出数步相移条纹图像
 % -单位半幅度条纹信号
 moveNumAll=24;
+
+fringeListAllUnit0=cell(moveNumAll,1);
+for k=1:moveNumAll
+    sf=-period*(k-1)/moveNumAll;
+    fringeListAllUnit0{k} = floor(pow2((255*0.5*(cos(((0:lengthOfSignal-1)-sf)/period*2*pi)+1)/2),0.8));
+end
+
+% -计算理想空域相位
+wrappedPhaseAll0=GetWrapPhase(fringeListAllUnit0,moveNumAll);
+
 fringeListAllUnit=cell(moveNumAll,1);
 for k=1:moveNumAll
     sf=-period*(k-1)/moveNumAll;
-    fringeListAllUnit{k} = floor(255*0.5*(cos(((0:lengthOfSignal-1)-sf)/period*2*pi)+1)/2);
+    fringeListAllUnit{k} = floor(pow2((255*0.5*(cos(((0:lengthOfSignal-1)-sf)/period*2*pi)+1)/2),2.3));
 end
 
 % 抽取出数步相移条纹图像
@@ -70,8 +86,8 @@ moveNumPart=4;
 fringeListFractional=SelectNStepFring(fringeListAllUnit,moveNumPart);
 
 %% -计算理想空域相位
-wrappedPhaseAll=GetWrapPhase(fringeListAllUnit,moveNumAll);
-AB=GetABNormal(fringeListAllUnit,wrappedPhaseAll);
+% wrappedPhaseAll0=GetWrapPhase(fringeListAllUnit,moveNumAll);
+AB=GetABNormal(fringeListAllUnit,wrappedPhaseAll0);
 
 %% -计算数步相移条纹的空域相位
 wrappedPhaseFractional=GetWrapPhase(fringeListFractional,moveNumPart);
@@ -163,10 +179,10 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Amplitude Modulated by Step Function)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractional                    -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
+plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractional                    -wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound),...
     plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
+plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertStepAmplitude-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound),...
     plotLineType,'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Amplitude Modulated by Step Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthWest');
@@ -175,12 +191,12 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------stepAmplitudeModulate-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractional-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound);
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractional-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
 fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
 fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
 fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertStepAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertStepAmplitude-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
 fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
 fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
@@ -292,10 +308,10 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Amplitude Modulated by Symmetrical Arc Function)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractional                              -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
+plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractional                              -wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound),...
     plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
+plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertSymmetricalArcAmplitude-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound),...
     plotLineType,'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Amplitude Modulated by Symmetrical Arc Function)');
 legend('Space Phase Error','HT Phase Error','Location','SouthEast');
@@ -304,12 +320,12 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------symmetricalArcModulate-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractional-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound);
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractional-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
 fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
 fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
 fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertSymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertSymmetricalArcAmplitude-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
 fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
 fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
@@ -419,10 +435,10 @@ end
 % 显示空域相位误差、Hilbert域相位误差
 figure('name','Phase Error (Amplitude Modulated by Asymmetrical Arc Function)','NumberTitle','off');
 % 空域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractional                               -wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
+plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractional                               -wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound),...
     plotLineType,'LineWidth',0.5,'MarkerSize',2);hold on;
 % Hilbert域相位误差
-plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound),...
+plot(extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertAsymmetricalArcAmplitude-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound),...
     plotLineType,'LineWidth',0.5,'MarkerSize',2);
 title('Phase Error (Amplitude Modulated by Asymmetrical Arc Function)');
 % 如果对称连续弧段调制幅度标记为1，亦显示其Hilbert域相位误差
@@ -432,12 +448,12 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域/阶跃式Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------asymmetricalArcModulate-------------\n');
-wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractional-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound);
+wrappedErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractional-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
 fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
 fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
 fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
-wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertAsymmetricalArcAmplitude-wrappedPhaseAll,upPhaseErrorBound,bottomPhaseErrorBound);
+wrappedErrorHT=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalHilbertAsymmetricalArcAmplitude-wrappedPhaseAll0,upPhaseErrorBound,bottomPhaseErrorBound);
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
 fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
 fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
