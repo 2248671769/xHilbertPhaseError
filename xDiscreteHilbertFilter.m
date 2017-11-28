@@ -16,7 +16,7 @@ for xt=0:periodWaveNum-1
 end
 xTick(end)=N-1; xTickLabel{end}=num2str(N-1);
 
-%% Discrete Hilbert Tranform Filter (Even)
+%% @_@{Discrete Hilbert Tranform Filter (Even)}********************
 htFilterEven=zeros(1,N);
 sinPi2Even=zeros(1,N);
 cotPiNEven=zeros(1,N);
@@ -44,7 +44,7 @@ xlim([0 N-1]);ylim([-1.2 1.2]);
 set(gca, 'XTick', xTick); set(gca, 'XTickLabel',xTickLabel)
 grid on;
 
-%% Discrete Hilbert Tranform Filter (Odd)
+%% @_@{Discrete Hilbert Tranform Filter (Odd)}*********************
 N=N+1;
 htFilterOdd =zeros(1,N);
 for i=1:N+1

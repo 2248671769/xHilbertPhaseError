@@ -4,11 +4,11 @@
 % ver：---
 close all;clear;
 
-%% {设置基本参数}****************************************************
+%% @_@{设置基本参数}****************************************************
 % 图像条纹参数
 width=1024; height=800; period=128;
 
-%% -频率调制
+%% --频率调制
 % 整数周期标记
 integatePeriodsFlag=1;
 % 非整数周期标记
@@ -54,10 +54,10 @@ upPhaseErrorBound=2; bottomPhaseErrorBound=-2;
 plotLineType='';        % '' 实线
 plotDottedLineType=':'; % ':'虚线
 
-%% {整数周期频率}****************************************************
+%% @_@{整数周期频率}****************************************************
 % 整数周期标记
 if integatePeriodsFlag==1
-%% -生成整数周期单位半幅度条纹信号
+%% --生成整数周期单位半幅度条纹信号
 moveNumAll=24;
 fringeListAllIntegatePeriods=cell(moveNumAll,1);
 for k=1:moveNumAll
@@ -74,17 +74,17 @@ for k=1:moveNumPart
     expectedHilbertOfFringeListFractionalIntegatePeriods{k}=255.0/2*(sin(((1:lengthOfSignal)-sf)/period*2*pi))/2;
 end
 
-%% -计算理想空域相位
+%% --计算理想空域相位
 wrappedPhaseAllIntegatePeriods=GetWrapPhase(fringeListAllIntegatePeriods,moveNumAll);
 
-%% -计算数步相移条纹的空域相位
+%% --计算数步相移条纹的空域相位
 wrappedPhaseFractionalIntegatePeriods=GetWrapPhase(fringeListFractionalIntegatePeriods,moveNumPart);
 
-%% -计算数步相移条纹的Hilbert变换与Hilbert域相位
+%% --计算数步相移条纹的Hilbert变换与Hilbert域相位
 fringeListFractionalHilbertIntegatePeriods=HilbertPerRow(fringeListFractionalIntegatePeriods,moveNumPart);
 wrappedPhaseFractionalHilbertIntegatePeriods=GetWrapPhaseWithHilbert(fringeListFractionalHilbertIntegatePeriods,moveNumPart);
 
-%% -显示整数周期数步相移条纹信号及其Hilbert变换、相位误差图表
+%% --显示整数周期数步相移条纹信号及其Hilbert变换、相位误差图表
 % 显示整数周期信号及其Hilbert变换
 figure('name','Integate Periods of Signal and its Hilbert Transform','NumberTitle','off');
 % 整数周期信号
@@ -141,22 +141,22 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------integatePeriods-------------\n');
-fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
-fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
-fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
-fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
+fprintf('        Mean of   Space Phase Error: %+f\n',mean(wrappedErrorSpace));
+fprintf('Max positive of   Space Phase Error: %+f\n',max( wrappedErrorSpace));
+fprintf('Max negative of   Space Phase Error: %+f\n',min( wrappedErrorSpace));
+fprintf('        RMSE of   Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
-fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
-fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max( wrappedErrorHT));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min( wrappedErrorHT));
 fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
 
 end
 
 
-%% {非整数周期}******************************************************
+%% @_@{非整数周期}******************************************************
 % 非整数周期标记
 if nonIntegatePeriodsFlag==1
-%% -生成非整数周期单位半幅度条纹信号
+%% --生成非整数周期单位半幅度条纹信号
 moveNumAll=24;
 fringeListAllNonIntegatePeriods=cell(moveNumAll,1);
 for k=1:moveNumAll
@@ -172,17 +172,17 @@ for k=1:moveNumPart
     expectedHilbertOfFringeListFractionalNonIntegatePeriods{k}=255.0/2*(sin(((1:lengthOfSignal-period/2)-sf)/period*2*pi))/2;
 end
 
-%% -计算理想空域相位
+%% --计算理想空域相位
 wrappedPhaseAllNonIntegatePeriods=GetWrapPhase(fringeListAllNonIntegatePeriods,moveNumAll);
 
-%% -计算数步相移条纹的空域相位
+%% --计算数步相移条纹的空域相位
 wrappedPhaseFractionalNonIntegatePeriods=GetWrapPhase(fringeListFractionalNonIntegatePeriods,moveNumPart);
 
-%% -计算数步相移条纹的Hilbert变换与Hilbert域相位
+%% --计算数步相移条纹的Hilbert变换与Hilbert域相位
 fringeListFractionalHilbertNonIntegatePeriods=HilbertPerRow(fringeListFractionalNonIntegatePeriods,moveNumPart);
 wrappedPhaseFractionalHilbertNonIntegatePeriods=GetWrapPhaseWithHilbert(fringeListFractionalHilbertNonIntegatePeriods,moveNumPart);
 
-%% -显示非整数周期数步相移条纹信号及其Hilbert变换、相位误差图表
+%% --显示非整数周期数步相移条纹信号及其Hilbert变换、相位误差图表
 % 显示非整数周期信号及其Hilbert变换
 figure('name','Non-Integate Periods of Signal and its Hilbert Transform','NumberTitle','off');
 % 非整数周期信号
@@ -248,13 +248,13 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
 % 在命令行中显示空域/Hilbert域相位误差的平均值、峰值与均方根
 fprintf('------------nonIntegatePeriods-------------\n');
-fprintf('          Mean of Space Phase Error: %+f\n',mean(wrappedErrorSpace));
-fprintf('  Max positive of Space Phase Error: %+f\n',max(wrappedErrorSpace));
-fprintf('  Max negative of Space Phase Error: %+f\n',min(wrappedErrorSpace));
-fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
+fprintf('        Mean of   Space Phase Error: %+f\n',mean(wrappedErrorSpace));
+fprintf('Max positive of   Space Phase Error: %+f\n',max( wrappedErrorSpace));
+fprintf('Max negative of   Space Phase Error: %+f\n',min( wrappedErrorSpace));
+fprintf('        RMSE of   Space Phase Error: %+f\n',sqrt(sum((wrappedErrorSpace-mean(wrappedErrorSpace)).^2))/lengthOfSignal);
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(wrappedErrorHT));
-fprintf('Max positive of Hilbert Phase Error: %+f\n',max(wrappedErrorHT));
-fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(wrappedErrorHT));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max( wrappedErrorHT));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min( wrappedErrorHT));
 fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((wrappedErrorHT-mean(wrappedErrorHT)).^2))/lengthOfSignal);
 
 end

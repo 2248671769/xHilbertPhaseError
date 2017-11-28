@@ -12,13 +12,13 @@
 % 6.比较上述两个相位误差
 close all;clear;
 
-%% {设置基本参数}*************************************************
+%% @_@{设置基本参数}*************************************************
 % 图像条纹参数
 width=1024; height=800; period=64;
 
-%% -信号延拓标记
+%% --信号延拓标记
 % 阶跃式与非对称连续弧段并行幅度调制标记
-amplitudeModulatedFlag=0;
+amplitudeModulatedFlag=1;
 % 全调制：阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制
 modulatedGroupFlag=1;
 
@@ -59,7 +59,7 @@ upPhaseErrorBound=2; bottomPhaseErrorBound=-2;
 plotLineType='';        % '' 实线
 plotDottedLineType=':'; % ':'虚线
 
-%% {生成各类调制信号}********************************************
+%% @_@{生成各类调制信号}********************************************
 % -单位半幅度条纹信号
 moveNumAll=24;
 fringeListAllUnit=cell(moveNumAll,1);
@@ -68,7 +68,7 @@ for k=1:moveNumAll
     fringeListAllUnit{k} = floor(255*0.5*(cos(((0:lengthOfSignal-1)-sf)/period*2*pi)+1)/2);
 end
 
-%% -阶跃式与非对称连续弧段并行幅度调制信号
+%% --阶跃式与非对称连续弧段并行幅度调制信号
 fringeListAllAmplitudeModulated=cell(moveNumAll,1);
 % 阶跃函数
 filterStepAmplitude=[ones(1,lengthOfSignal/2) 2*ones(1,lengthOfSignal/2)];
@@ -79,7 +79,7 @@ for k=1:moveNumAll
     fringeListAllAmplitudeModulated{k}=fringeListAllUnit{k}.*filterStepAmplitude.*filterAsymmetricalArcAmplitude;
 end
 
-%% -阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制信号
+%% --阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制信号
 fringeListAllModulatedGroup=cell(moveNumAll,1);
 for k=1:moveNumAll
     sf=-period*(k-1)/moveNumAll;
@@ -87,7 +87,7 @@ for k=1:moveNumAll
          .*filterStepAmplitude.*filterAsymmetricalArcAmplitude;
 end
 
-%% -提取数步相称的条纹信号
+%% --提取数步相称的条纹信号
 moveNumPart=4;
 % -单位半幅度条纹信号
 fringeListFractionalUnit=SelectNStepFring(fringeListAllUnit,moveNumPart);
@@ -96,7 +96,7 @@ fringeListFractionalAmplitudeModulated=SelectNStepFring(fringeListAllAmplitudeMo
 % -阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制
 fringeListFractionalModulatedGroup=SelectNStepFring(fringeListAllModulatedGroup,moveNumPart);
 
-%% -计算理想空域相位
+%% --计算理想空域相位
 % 单位条纹
 wrappedPhaseAllUnit=GetWrapPhase(fringeListAllUnit,moveNumAll);
 ABAllUnit=GetABNormal(fringeListAllUnit,wrappedPhaseAllUnit);
@@ -107,10 +107,10 @@ ABAllAmplitudeModulated=GetABNormal(fringeListAllAmplitudeModulated,wrappedPhase
 wrappedPhaseAllModulatedGroup=GetWrapPhase(fringeListAllModulatedGroup,moveNumAll);
 ABAllModulatedGroup=GetABNormal(fringeListAllModulatedGroup,wrappedPhaseAllModulatedGroup);
 
-%% -计算数步相移(单位半幅度条纹信号)的空域相位
+%% --计算数步相移(单位半幅度条纹信号)的空域相位
 wrappedPhaseFractionalUnit=GetWrapPhase(fringeListFractionalUnit,moveNumPart);
 
-%% -显示条纹信号
+%% --显示条纹信号
 for k=1:moveNumPart
     figure('name',sprintf('%d/%d Step of Fringe Signal (Modulated Group)',k,moveNumPart),'NumberTitle','off');
     % -单位半幅度条纹信号
@@ -126,18 +126,17 @@ for k=1:moveNumPart
     set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 end
 
-%% *****************************************************************
+%% @_@{[Hilbert]-(阶跃式与非对称连续弧段并行幅度调制信号)}*
 if amplitudeModulatedFlag==1
-%% [Hilbert]-(阶跃式与非对称连续弧段并行幅度调制信号)*
-%% -计算数步相移(阶跃式与非对称连续弧段并行幅度调制)的空域相位
+%% --计算数步相移(阶跃式与非对称连续弧段并行幅度调制)的空域相位
 wrappedPhaseFractionalAmplitudeModulated=GetWrapPhase(fringeListFractionalAmplitudeModulated,moveNumPart);
 ABFractionalAmplitudeModulated=GetABNormal(fringeListFractionalAmplitudeModulated,wrappedPhaseFractionalAmplitudeModulated);
 
-%% -[Hilbert]-计算数步相移条纹的Hilbert变换与Hilbert域相位
+%% --[Hilbert]-计算数步相移条纹的Hilbert变换与Hilbert域相位
 fringeListFractionalHilbertAmplitudeModulated=HilbertPerRow(fringeListFractionalAmplitudeModulated,moveNumPart);
 wrappedPhaseFractionalHilbertAmplitudeModulated=GetWrapPhaseWithHilbert(fringeListFractionalHilbertAmplitudeModulated,moveNumPart);
 
-% %% -显示Hilbert变换
+% %% --显示Hilbert变换
 % for k=1:moveNumPart
 %     figure('name',sprintf('%d/%d Hilbert Transform of Fringe Signal (Amplitude Modulated)',k,moveNumPart),'NumberTitle','off');
 %     % -阶跃式与非对称连续弧段并行幅度调制信号
@@ -151,11 +150,11 @@ wrappedPhaseFractionalHilbertAmplitudeModulated=GetWrapPhaseWithHilbert(fringeLi
 %     set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % end
 
-%% -归一化处理(fringe-A)/B及归一化后的理想空域相位
+%% --归一化处理(fringe-A)/B及归一化后的理想空域相位
 fringeListAllNormalizationAmplitudeModulated=NormalizeFringe(fringeListAllAmplitudeModulated,moveNumAll,ABAllAmplitudeModulated);
 wrappedPhaseAllNormalizationAmplitudeModulated=GetWrapPhase(fringeListAllNormalizationAmplitudeModulated,moveNumAll);
 
-%% -归一化处理(fringe-A)/B及归一化后的空域相位
+%% --归一化处理(fringe-A)/B及归一化后的空域相位
 fringeListFractionalNormalizationAmplitudeModulated=NormalizeFringe(fringeListFractionalAmplitudeModulated,moveNumPart,ABFractionalAmplitudeModulated);
 wrappedPhaseFractionalNormalizationAmplitudeModulated=GetWrapPhase(fringeListFractionalNormalizationAmplitudeModulated,moveNumPart);
 for k=1:moveNumPart
@@ -178,7 +177,7 @@ for k=1:moveNumPart
     set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 end
 
-% %% -{延拓}
+% %% --{延拓}
 % fringeListFractionalContinuationAmplitudeModulated=cell(size(fringeListFractionalAmplitudeModulated));
 % for k=1:moveNumPart
 %     sf=-period*(k-1)/moveNumPart;
@@ -206,14 +205,14 @@ end
 % 
 % end
 
-%% -[Hilbert]-计算归一化后的数步相移条纹的Hilbert变换与Hilbert域相位
+%% --[Hilbert]-计算归一化后的数步相移条纹的Hilbert变换与Hilbert域相位
 fringeListFractionalHilbertNormalizationAmplitudeModulated=HilbertPerRow(fringeListFractionalNormalizationAmplitudeModulated,moveNumPart);
 wrappedPhaseFractionalHilbertNormalizationAmplitudeModulated=GetWrapPhaseWithHilbert(fringeListFractionalHilbertNormalizationAmplitudeModulated,moveNumPart);
 
-%% -归一化后的平均相位=(归一化后的空域相位+归一化的Hilbert域相位)/2
+%% --归一化后的平均相位=(归一化后的空域相位+归一化的Hilbert域相位)/2
 wrappedPhaseFractionalMeanNormalization=(wrappedPhaseFractionalNormalizationAmplitudeModulated+wrappedPhaseFractionalHilbertNormalizationAmplitudeModulated)/2.0;
 
-%% -显示归一化后的相位
+%% --显示归一化后的相位
 figure('name','Phase after Normalization (Amplitude Modulated)','NumberTitle','off');
 % 24步相移归一化后的理想空域相位
 plot(wrappedPhaseAllNormalizationAmplitudeModulated, plotDottedLineType,'LineWidth',1.5);hold on;
@@ -232,7 +231,7 @@ legend( ...
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-%% -显示归一化后的相位误差
+%% --显示归一化后的相位误差
 figure('name','Phase Error after Normalization (Amplitude Modulated)','NumberTitle','off');
 % 数步相移归一化后的空域相位误差
 phaseErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalNormalizationAmplitudeModulated-wrappedPhaseAllNormalizationAmplitudeModulated,upPhaseErrorBound,bottomPhaseErrorBound);
@@ -254,34 +253,34 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 % 在命令行中显示空域/Hilbert域/平均相位误差的平均值、峰值与均方根
 % 数步相移归一化后的空域相位误差
 fprintf('------------Phase Error after Normalization (%d Steps Amplitude Modulated)-------------\n',moveNumPart);
-fprintf('          Mean of Space Phase Error: %+f\n',mean(phaseErrorSpace));
-fprintf('  Max positive of Space Phase Error: %+f\n',max(phaseErrorSpace));
-fprintf('  Max negative of Space Phase Error: %+f\n',min(phaseErrorSpace));
-fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((phaseErrorSpace  -mean(phaseErrorSpace))  .^2))/lengthOfSignal);
+fprintf('        Mean of   Space Phase Error: %+f\n',mean(phaseErrorSpace));
+fprintf('Max positive of   Space Phase Error: %+f\n',max( phaseErrorSpace));
+fprintf('Max negative of   Space Phase Error: %+f\n',min( phaseErrorSpace));
+fprintf('        RMSE of   Space Phase Error: %+f\n',sqrt(sum((phaseErrorSpace  -mean(phaseErrorSpace))  .^2))/lengthOfSignal);
 % 数步相移归一化后的Hilbert域相位误差
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(phaseErrorHilbert));
-fprintf('Max positive of Hilbert Phase Error: %+f\n',max(phaseErrorHilbert));
-fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(phaseErrorHilbert));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max( phaseErrorHilbert));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min( phaseErrorHilbert));
 fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((phaseErrorHilbert-mean(phaseErrorHilbert)).^2))/lengthOfSignal);
 % 数步相移归一化后的平均相位误差
-fprintf('           Mean of Mean Phase Error: %+f\n',mean(phaseErrorMean));
-fprintf('   Max positive of Mean Phase Error: %+f\n',max(phaseErrorMean));
-fprintf('   Max negetive of Mean Phase Error: %+f\n',min(phaseErrorMean));
-fprintf('           RMSE of Mean Phase Error: %+f\n',sqrt(sum((phaseErrorMean   -mean(phaseErrorMean))   .^2))/lengthOfSignal);
+fprintf('        Mean of    Mean Phase Error: %+f\n',mean(phaseErrorMean));
+fprintf('Max positive of    Mean Phase Error: %+f\n',max( phaseErrorMean));
+fprintf('Max negetive of    Mean Phase Error: %+f\n',min( phaseErrorMean));
+fprintf('        RMSE of    Mean Phase Error: %+f\n',sqrt(sum((phaseErrorMean   -mean(phaseErrorMean))   .^2))/lengthOfSignal);
 end
 
 %% *****************************************************************
 if modulatedGroupFlag==1
-%% [Hilbert]-[延拓]-(全调制：阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)*
-%% -计算数步相移(全调制)的空域相位
+%% @_@{[Hilbert]-[延拓]-(全调制：阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)}*
+%% --计算数步相移(全调制)的空域相位
 wrappedPhaseFractionalModulatedGroup=GetWrapPhase(fringeListFractionalModulatedGroup,moveNumPart);
 ABFractionalModulatedGroup=GetABNormal(fringeListFractionalModulatedGroup,wrappedPhaseFractionalModulatedGroup);
 
-%% -[Hilbert]-计算数步相移条纹的Hilbert变换与Hilbert域相位
+%% --[Hilbert]-计算数步相移条纹的Hilbert变换与Hilbert域相位
 fringeListFractionalHilbertModulatedGroup=HilbertPerRow(fringeListFractionalModulatedGroup,moveNumPart);
 wrappedPhaseFractionalHilbertModulatedGroup=GetWrapPhaseWithHilbert(fringeListFractionalHilbertModulatedGroup,moveNumPart);
 
-% %% -显示Hilbert变换
+% %% --显示Hilbert变换
 % for k=1:moveNumPart
 %     figure('name',sprintf('%d/%d Hilbert Transform of Fringe Signal (Amplitude Modulated)',k,moveNumPart),'NumberTitle','off');
 %     % -阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制
@@ -295,11 +294,11 @@ wrappedPhaseFractionalHilbertModulatedGroup=GetWrapPhaseWithHilbert(fringeListFr
 %     set(gca, 'YTick', yTick);set(gca, 'YTickLabel',yTickLabel);
 % end
 
-%% -归一化处理(fringe-A)/B及归一化后的空域相位
+%% --归一化处理(fringe-A)/B及归一化后的空域相位
 fringeListAllNormalizationModulatedGroup=NormalizeFringe(fringeListAllModulatedGroup,moveNumAll,ABAllModulatedGroup);
 wrappedPhaseAllNormalizationModulatedGroup=GetWrapPhase(fringeListAllNormalizationModulatedGroup,moveNumAll);
 
-%% -归一化处理(fringe-A)/B及归一化后的空域相位
+%% --归一化处理(fringe-A)/B及归一化后的空域相位
 fringeListFractionalNormalizationModulatedGroup=NormalizeFringe(fringeListFractionalModulatedGroup,moveNumPart,ABFractionalModulatedGroup);
 wrappedPhaseFractionalNormalizationModulatedGroup=GetWrapPhase(fringeListFractionalNormalizationModulatedGroup,moveNumPart);
 for k=1:moveNumPart
@@ -322,7 +321,7 @@ for k=1:moveNumPart
     set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 end
 
-%% -{延拓}
+%% --{延拓}
 fringeListFractionalContinuationModulatedGroup=cell(size(fringeListFractionalModulatedGroup));
 for k=1:moveNumPart
     sf=-period*(k-1)/moveNumPart;
@@ -350,14 +349,14 @@ for k=1:moveNumPart
 
 end
 
-%% -[Hilbert]-计算归一化后的数步相移条纹的Hilbert变换与Hilbert域相位
+%% --[Hilbert]-计算归一化后的数步相移条纹的Hilbert变换与Hilbert域相位
 fringeListFractionalHilbertNormalizationModulatedGroup=HilbertPerRow(fringeListFractionalNormalizationModulatedGroup,moveNumPart);
 wrappedPhaseFractionalHilbertNormalizationModulatedGroup=GetWrapPhaseWithHilbert(fringeListFractionalHilbertNormalizationModulatedGroup,moveNumPart);
 
-%% -归一化后的平均相位=(归一化后的空域相位+归一化的Hilbert域相位)/2
+%% --归一化后的平均相位=(归一化后的空域相位+归一化的Hilbert域相位)/2
 wrappedPhaseFractionalMeanNormalization=(wrappedPhaseFractionalNormalizationModulatedGroup+wrappedPhaseFractionalHilbertNormalizationModulatedGroup)/2.0;
 
-%% -显示归一化后的相位
+%% --显示归一化后的相位
 figure('name','Phase after Normalization (Modulated Group)','NumberTitle','off');
 % 24步相移归一化后的理想空域相位
 plot(wrappedPhaseAllNormalizationModulatedGroup, plotDottedLineType,'LineWidth',1.5);hold on;
@@ -376,7 +375,7 @@ legend( ...
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-%% -显示归一化后的相位误差
+%% --显示归一化后的相位误差
 figure('name','Phase Error after Normalization (Modulated Group)','NumberTitle','off');
 % 数步相移归一化后的空域相位误差
 phaseErrorSpace=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalNormalizationModulatedGroup-wrappedPhaseAllNormalizationModulatedGroup,upPhaseErrorBound,bottomPhaseErrorBound);
@@ -398,43 +397,43 @@ set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 % 在命令行中显示空域/Hilbert域/平均相位误差的平均值、峰值与均方根
 % 数步相移归一化后的空域相位误差
 fprintf('------------Phase Error after Normalization (%d Steps Modulated Group)-------------\n',moveNumPart);
-fprintf('          Mean of Space Phase Error: %+f\n',mean(phaseErrorSpace));
-fprintf('  Max positive of Space Phase Error: %+f\n',max(phaseErrorSpace));
-fprintf('  Max negative of Space Phase Error: %+f\n',min(phaseErrorSpace));
-fprintf('          RMSE of Space Phase Error: %+f\n',sqrt(sum((phaseErrorSpace  -mean(phaseErrorSpace))  .^2))/lengthOfSignal);
+fprintf('        Mean of   Space Phase Error: %+f\n',mean(phaseErrorSpace));
+fprintf('Max positive of   Space Phase Error: %+f\n',max( phaseErrorSpace));
+fprintf('Max negative of   Space Phase Error: %+f\n',min( phaseErrorSpace));
+fprintf('        RMSE of   Space Phase Error: %+f\n',sqrt(sum((phaseErrorSpace  -mean(phaseErrorSpace))  .^2))/lengthOfSignal);
 % 数步相移归一化后的Hilbert域相位误差
 fprintf('        Mean of Hilbert Phase Error: %+f\n',mean(phaseErrorHilbert));
-fprintf('Max positive of Hilbert Phase Error: %+f\n',max(phaseErrorHilbert));
-fprintf('Max negetive of Hilbert Phase Error: %+f\n',min(phaseErrorHilbert));
+fprintf('Max positive of Hilbert Phase Error: %+f\n',max( phaseErrorHilbert));
+fprintf('Max negetive of Hilbert Phase Error: %+f\n',min( phaseErrorHilbert));
 fprintf('        RMSE of Hilbert Phase Error: %+f\n',sqrt(sum((phaseErrorHilbert-mean(phaseErrorHilbert)).^2))/lengthOfSignal);
 % 数步相移归一化后的平均相位误差
-fprintf('           Mean of Mean Phase Error: %+f\n',mean(phaseErrorMean));
-fprintf('   Max positive of Mean Phase Error: %+f\n',max(phaseErrorMean));
-fprintf('   Max negetive of Mean Phase Error: %+f\n',min(phaseErrorMean));
-fprintf('           RMSE of Mean Phase Error: %+f\n',sqrt(sum((phaseErrorMean   -mean(phaseErrorMean))   .^2))/lengthOfSignal);
+fprintf('        Mean of    Mean Phase Error: %+f\n',mean(phaseErrorMean));
+fprintf('Max positive of    Mean Phase Error: %+f\n',max( phaseErrorMean));
+fprintf('Max negetive of    Mean Phase Error: %+f\n',min( phaseErrorMean));
+fprintf('        RMSE of    Mean Phase Error: %+f\n',sqrt(sum((phaseErrorMean   -mean(phaseErrorMean))   .^2))/lengthOfSignal);
 
 end
 
 %% *****************************************************************
-%% {Hilbert}-{延拓}-(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)*
+%% @_@{Hilbert}-{延拓}-(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)*
 
 
 return
 
 % ----------------------------------------------------------------------------------------
 
-%% {Hilbert}-{延拓}-(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)*
+%% @_@{Hilbert}-{延拓}-(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)*
 
-%% -计算数步相移(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)的空域相位
+%% --计算数步相移(阶跃式与非对称连续弧段并行幅度调制及非对称连续弧段频率调制)的空域相位
 wrappedPhaseFractionalModulatedGroup=GetWrapPhase(fringeListFractionalModulatedGroup,moveNumPart);
 % 
-% %% -计算数步相移条纹的Hilbert变换与Hilbert域相位
+% %% --计算数步相移条纹的Hilbert变换与Hilbert域相位
 % fringeListFractionalHilbertModulatedGroup=HilbertPerRow(fringeListFractionalModulatedGroup,moveNumPart);
 % wrappedPhaseFractionalHilbertModulatedGroup=GetWrapPhaseWithHilbert(fringeListFractionalHilbertModulatedGroup,moveNumPart);
 
-%% {显示图表}*****************************************************
+%% @_@{显示图表}*****************************************************
 
-%% -显示折叠相位
+%% --显示折叠相位
 figure('name','Wrapped Phase (Amplitude and Frequency Modulated Group)','NumberTitle','off');
 % -理想空域相位
 plot(wrappedPhaseAllModulatedGroup,           plotLineType,'LineWidth',1.0);hold on;
@@ -452,7 +451,7 @@ legend('Ideal Space Phase', ...
 xlim([0,lengthOfSignal-1]);grid on;
 set(gca, 'XTick', xTick);set(gca, 'XTickLabel',xTickLabel);
 
-%% -显示相位误差
+%% --显示相位误差
 figure('name','Phase Error (Amplitude and Frequency Modulated Group)','NumberTitle','off');
 % 数步相移(单位半幅度条纹信号)的空域相位误差
 phaseError1=extractValidPhaseErrorWithBounds(wrappedPhaseFractionalUnit-wrappedPhaseAllModulatedGroup,upPhaseErrorBound,bottomPhaseErrorBound);
